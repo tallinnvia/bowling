@@ -1,17 +1,17 @@
 # Tallinn VIA bowling
 
-Avalik tabloo ja korraldaja töövaated. GitHub Pages teenindab kausta `docs`. Võistlusandmed ja parooli kontroll töötavad olemasolevas Tallinn VIA võistluse serveris. API aadress on failis `pages/index.html`.
+Avalik tabloo ja korraldaja töövaated. Haru `main` sisaldab lähtekoodi ja kaustas `docs` valmiskujul veebilehte. GitHub Pages avaldab haru `gh-pages` juurkausta. Võistlusandmed ja parooli kontroll töötavad olemasolevas Tallinn VIA võistluse serveris. API aadress on failis `pages/index.html`.
 
 ## Avaldamine
 
-1. Vali hoidlas **Settings → Pages → Deploy from a branch → main → /docs**.
+1. Avaldamisallikas on **Settings → Pages → Deploy from a branch → gh-pages → /(root)**.
 2. Kontrolli, et `https://tallinnvia.github.io/bowling/?view=display` avab tabloo ja `?view=admin` küsib korraldaja parooli.
 3. Sisesta Pagesi seadetes kohandatud domeen `bowling.tallinnvia.ee`. Seejärel lisa domeeni DNS-i CNAME-kirje nimega `bowling`, mille siht on `tallinnvia.github.io.`.
 4. Pärast domeeni kinnitamist ja sertifikaadi väljastamist lülita sisse **Enforce HTTPS**.
 
 ## Muudatuste tegemine
 
-Kasuta Node.js 22 või uuemat. Käivita `npm install` ja `npm run build`. Lisa lähtekoodi ja kausta `docs` muudatused samasse commiti. Esimeseks avaldamiseks on kaust juba valmis.
+Kasuta Node.js 22 või uuemat. Käivita `npm install` ja `npm run build`. Lisa lähtekoodi ja kausta `docs` muudatused samasse commiti. Avaldamiseks kopeeri ehitatud `docs/` sisu haru `gh-pages` juurkausta ning salvesta muudatused sinna harusse. Säilita kohandatud domeeni seadistamisel tekkinud `CNAME` fail.
 
 ## Korraldaja ligipääs
 
