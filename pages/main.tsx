@@ -7,16 +7,19 @@ import {setWorkbookReference} from '../lib/awards';
 import {apiFetch} from '../app/client-api';
 
 import ArchiveView from '../app/archive-view';
+import {firstArchiveYear} from '../lib/archive-years.mjs';
 const route=location.pathname.replace(/^\/bowling(?=\/|$)/,'').split('/').filter(Boolean);
-const archive=route.length===1&&(route[0]==='arhiiv'||/^\d{4}$/.test(route[0]));
+const year=route.length===1&&/^\d{4}$/.test(route[0])?Number(route[0]):null;
+const beforeArchive=year!==null&&year<firstArchiveYear;
+const archive=(route.length===1&&route[0]==='arhiiv')||(year!==null&&year>=firstArchiveYear);
 const params=new URLSearchParams(location.search);
 const view=params.get('view')==='admin' && params.get('settings')==='1' ? 'settings' : params.get('view');
-const page=archive?<ArchiveView year={route[0]==='arhiiv'?'':route[0]} selected={params.get('voistlus')||''}/>:view==='admin'||view==='lanes'||view==='settings'
+const page=beforeArchive?<main className="organizer-login"><section><h1>Arhiiv algab {firstArchiveYear}. aastast</h1><a className="button outline" href="/arhiiv/">Ava võistluste arhiiv</a></section></main>:archive?<ArchiveView year={route[0]==='arhiiv'?'':route[0]} selected={params.get('voistlus')||''}/>:view==='admin'||view==='lanes'||view==='settings'
   ? <OrganizerGate><Bowling initialMode={view}/></OrganizerGate>
   : view==='display'||view==='display2' ? <Bowling initialMode={view}/> : <Home/>;
 const root=createRoot(document.getElementById('app')!);
 async function start(){
-  if(view&&!archive){
+  if(view&&!archive&&!beforeArchive){
     try {
       const response=await apiFetch('/api/workbook');
       if(!response.ok)throw Error();

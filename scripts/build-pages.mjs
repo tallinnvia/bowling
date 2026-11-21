@@ -1,5 +1,6 @@
 import {build} from 'esbuild';
 import {mkdir,readFile,writeFile,cp,copyFile} from 'node:fs/promises';
+import {firstArchiveYear} from '../lib/archive-years.mjs';
 const dir='docs';
 await mkdir(dir,{recursive:true});
 await build({entryPoints:['pages/main.tsx'],outfile:dir+'/bowling.js',bundle:true,minify:true,format:'esm',jsx:'automatic',
@@ -11,9 +12,11 @@ await cp('public',dir,{recursive:true});
 await copyFile('pages/index.html',dir+'/index.html');
 await writeFile(dir+'/.nojekyll','');
 
-// GitHub Pages serves physical year entry points. The fallback also supports years outside this range.
+// GitHub Pages serves physical year entry points. The fallback supports later years.
 const archiveShell=(await readFile('pages/index.html','utf8')).replace('<head>','<head><base href="../">').replace('<title>LIONS BOWLING</title>','<title>Võistluste arhiiv · LIONS BOWLING</title>');
-for(const route of ['arhiiv',...Array.from({length:111},(_,i)=>String(1990+i))]){
+const yearRoutes=[];
+for(let year=firstArchiveYear;year<=2100;year++)yearRoutes.push(String(year));
+for(const route of ['arhiiv',...yearRoutes]){
   await mkdir(dir+'/'+route,{recursive:true});
   await writeFile(dir+'/'+route+'/index.html',archiveShell);
 }

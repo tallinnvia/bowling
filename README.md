@@ -44,7 +44,7 @@ Päises olev **Tulemuste ekraan** avab tabloo. Selle kõrval olevad neli valikut
 3. Vajuta **Kinnita ja arhiveeri**. Lõpptulemused, eriauhinnad ja rajajaotus on nüüd avalikus arhiivis. Saaliekraan teatab, et aktiivset võistlust ei ole. Kui ühel aastal toimub mitu võistlust, saab nende vahel valida sama aasta lehel.
 4. Järgmise võistluse eel vali seadetes **Alusta uut võistlust** ning sisesta nimi ja kuupäev. Valik **Too eelmise võistluse koosseisud üle** säilitab liikmete ja võistkondade seose varasemate tulemustega. Üle toodud liikmed alustavad 0 punktist. Mõlema vahetuse rajajaotus tuleb uuesti täita.
 
-**Varasema tulemuse leidmine.** Vali arhiivist aasta, võistlus, rühm ja arvestus. Võistleja või võistkonna nimel vajutades näed tema tulemusi võistluste kaupa, rekordit, keskmist ja poodiumikohti. Statistika aastavaates loetakse osaluskordi, seega kahel sama aasta võistlusel osalenu läheb arvesse kaks korda.
+**Varasema tulemuse leidmine.** Arhiiv algab 2026. aastast. Vali arhiivist aasta, võistlus, rühm ja arvestus. Võistleja või võistkonna nimel vajutades näed tema tulemusi võistluste kaupa, rekordit, keskmist ja poodiumikohti. Statistika aastavaates loetakse osaluskordi, seega kahel sama aasta võistlusel osalenu läheb arvesse kaks korda.
 
 **Arhiveeritud punktisumma parandamine.** Logi samal brauserikaardil korraldajana sisse ja ava arhiivist võistlus. Ava **Arvestus ja versioonid → Paranda tulemust**, vali võistleja, sisesta punktid ja paranduse põhjus ning vajuta **Salvesta uus versioon**. Varasem lõppseis jääb versioonivalikust avatavaks.
 
