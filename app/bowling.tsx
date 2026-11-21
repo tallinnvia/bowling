@@ -1,4 +1,5 @@
 'use client';
+import {ArchiveActions,type EventResponse} from './archive-actions';
 import {apiFetch} from './client-api';
 import {useEffect,useRef,useState} from 'react';
 import {Plus,Trash2,Download,Upload,Check,RefreshCw,Maximize2,Monitor,Save,Search,ChevronRight,Pencil,ArrowLeft} from 'lucide-react';
@@ -14,7 +15,7 @@ import {State,Team,Player,total,ranked,validate,rosterErrors,normalizeState,team
 const fmt=(n:number|null)=>n===null?'–':n.toLocaleString('et-EE',{maximumFractionDigits:2});
 const uid=()=>crypto.randomUUID();
 const categories:Record<string,string>={All:'Kõik',Open:'Üldarvestus',Women:'Naised',Men:'Mehed',Juniors:'Juuniorid',Unassigned:'Määramata'};
-type Envelope={state:State;revision:string;error?:string};
+type Envelope=EventResponse & {error?:string};
 function localize(state:State):State {
  return normalizeState(withExcelCategories({...state,title:['Lions Bowling','Lionsi bowlinguturniir'].includes(state.title)?'XXXI LIONS BOWLING - 19.11.2026':state.title,subtitle:state.subtitle==='Hosted by LC Tallinn VIA'?'LC Tallinn VIA':state.subtitle}));
 }
@@ -23,6 +24,7 @@ function download(name:string,text:string,type:string){
 }
 export default function Bowling({initialMode='display'}:{initialMode?:'admin'|'display'|'display2'|'lanes'|'settings'}){
  const [data,setData]=useState<State>(localize(seed as State));
+ const [activeEvent,setActiveEvent]=useState(true),[lastArchive,setLastArchive]=useState<EventResponse['lastArchive']>(null),[laneDirty,setLaneDirty]=useState(false);
  const [revision,setRevision]=useState('initial');
  const published=useRef(data);
  const [mode,setMode]=useState(initialMode);
@@ -55,6 +57,7 @@ export default function Bowling({initialMode='display'}:{initialMode?:'admin'|'d
  const [notice,setNotice]=useState(''),[ready,setReady]=useState(false),[remote,setRemote]=useState(false);
  const dirtyRef=useRef(false),revRef=useRef('initial'),fileRef=useRef<HTMLInputElement>(null);
  function acceptPublished(value:Envelope){
+  setActiveEvent(value.active!==false);setLastArchive(value.lastArchive);
   const next=localize(value.state);
   setErrors(previous=>previous.size ? new Map() : previous);
   published.current=next;setData(next);setRevision(value.revision);revRef.current=value.revision;setRemote(false);
@@ -134,16 +137,17 @@ export default function Bowling({initialMode='display'}:{initialMode?:'admin'|'d
   }catch(e){setError(e instanceof Error?e.message:'Varukoopia laadimine ebaõnnestus.')}
   if(fileRef.current)fileRef.current.value='';
  }
- function fresh(){
-  if(!confirm('Kas tühjendada kõik tulemused? Võistkonnad ja võistlejad jäävad alles.'))return;
-  edit({...data,date:new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Tallinn'}).format(new Date()),sample:false,updatedAt:null,specialAwards:{teamLast:null,individualMiddle:null,individualLast:null},teams:data.teams.map(team=>({...team,players:team.players.map(player=>({...player,score:null}))}))});
+ function afterLifecycle(result:EventResponse){
+  acceptPublished(result);setDirty(false);dirtyRef.current=false;setLaneDirty(false);setVisitedLanes(false);setError('');setNotice('');
  }
  const publication=<span className={'publication-state '+(dirty?'pending':'saved')} role="status">{saving||!ready?<RefreshCw size={16} className="spinning"/>:dirty?<span className="pending-dot"/>:<Check size={16}/>} {!ready?'Laadin tulemusi…':saving?'Avaldamine…':dirty?'Avaldamata muudatused':'Kõik avaldatud'}</span>;
  const connection=<span className={'connection '+(status==='Ühendatud'?'online':'')}><i/>{status}</span>;
- if(mode==='display'||mode==='display2')return <LiveBoard data={data} status={status} ready={ready}/>;
+ if(mode==='display'||mode==='display2')return !activeEvent?<main className="archive-idle"><h1>Aktiivset võistlust ei ole</h1></main>:<LiveBoard data={data} status={status} ready={ready}/>;
 
  const publishButton=<button className="button primary publish-button" onClick={save} disabled={!ready||!dirty||saving||remote}><Save size={18}/>{saving?'Salvestamine…':settings?'Salvesta seaded':'Avalda tulemused'}</button>;
- return <>{visitedLanes&&<div hidden={mode!=='lanes'}><LaneEditor teams={ready?data.teams:[]} navigate={navigate} active={mode==='lanes'}/></div>}
+ if(ready&&!activeEvent)return <div className="admin"><EntryHeader view={mode} navigate={navigate}>{null}</EntryHeader><main>
+  {mode!=='settings'?<section className="panel archive-action"><h1>Aktiivset võistlust ei ole</h1><a className="button outline" href="?view=settings">Ava seaded</a></section>:<ArchiveActions data={data} active={false} revision={revision} dirty={false} last={lastArchive} onSaved={afterLifecycle}/>}</main></div>;
+ return <>{visitedLanes&&<div hidden={mode!=='lanes'}><LaneEditor onDirty={setLaneDirty} teams={ready?data.teams:[]} navigate={navigate} active={mode==='lanes'}/></div>}
  <div hidden={mode==='lanes'} className={settings ? "admin" : "admin results-entry"} onKeyDown={event=>{if((event.metaKey||event.ctrlKey)&&event.key==='Enter'){event.preventDefault();if(dirty&&ready&&!saving)void save()}}}>
   {(mode==='admin'||mode==='settings')&&<EntryHeader view={mode} navigate={navigate}>{publishButton}</EntryHeader>}
   <main><fieldset disabled={!ready||saving} className="admin-fieldset">
@@ -155,10 +159,11 @@ export default function Bowling({initialMode='display'}:{initialMode?:'admin'|'d
     <fieldset className="transition-choice"><legend>Ekraanivahetus</legend>
      {([['swirl','Värvipööris'],['rain','Sümbolite sadu']] as const).map(([value,label])=><label key={value}><input type="radio" name="screen-transition" value={value} checked={data.screenTransition===value} onChange={()=>edit({...data,screenTransition:value})}/>{label}</label>)}
     </fieldset>
-    <div className="tools"><button className="button outline" onClick={()=>download('bowlingu-varukoopia.json',JSON.stringify(data,null,2),'application/json')}><Download size={18}/>Salvesta varukoopia</button><button className="button outline" onClick={()=>fileRef.current?.click()}><Upload size={18}/>Taasta varukoopia</button><input ref={fileRef} hidden type="file" accept=".json,application/json" onChange={e=>restore(e.target.files?.[0])}/><button className="button outline" onClick={csv}><Download size={18}/>Ekspordi tulemused</button><button className="button outline" onClick={fresh}><RefreshCw size={18}/>Alusta uut võistlust</button><RefreshControl/></div>
+    <div className="tools"><button className="button outline" onClick={()=>download('bowlingu-varukoopia.json',JSON.stringify(data,null,2),'application/json')}><Download size={18}/>Salvesta varukoopia</button><button className="button outline" onClick={()=>fileRef.current?.click()}><Upload size={18}/>Taasta varukoopia</button><input ref={fileRef} hidden type="file" accept=".json,application/json" onChange={e=>restore(e.target.files?.[0])}/><button className="button outline" onClick={csv}><Download size={18}/>Ekspordi tulemused</button><RefreshControl/></div>
     <div className="special-award-settings"><h3>Eriauhinnad</h3><p>Vaadetes „Tulemused 1“ ja „Tulemused 2“ osalevad „LIONS klubi“ märkega võistkonnad. Vaates „Firma tulemused“ osalevad märkimata võistkonnad. Eriauhinnad arvutatakse vastava rühma tulemuste põhjal, sealhulgas juunioride tulemused. Edetabelites ja eriauhindade arvestuses osalevad ainult positiivse tulemusega võistlejad ja võistkonnad.</p><ul><li>Võistkondlik tagantpoolt esimene: väikseim punktisumma.</li><li>Individuaalne keskmine: aritmeetilisele keskmisele kõige lähem tulemus.</li><li>Individuaalne viimane: väikseim punktisumma.</li></ul><p>Võrdse tulemuse või sama kauguse korral kuvatakse kõik koha jagajad.</p></div>
    </section>}
 
+   {settings&&<ArchiveActions data={data} active={activeEvent} revision={revision} dirty={dirty||laneDirty||remote} last={lastArchive} onSaved={afterLifecycle}/>}
    {!settings&&<TeamsEditor data={data} onChange={edit} errors={errors} focusRequest={focusRequest}/>}
    {settings&&<button className="textbutton reload-button" onClick={reload}><RefreshCw size={15}/>Loobu muudatustest ja laadi avaldatud tulemused</button>}
   </fieldset></main>

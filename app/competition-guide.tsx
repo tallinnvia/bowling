@@ -9,7 +9,7 @@ export default function CompetitionGuide() {
         <li><b>Avalda rajajaotus.</b><p>Ava <a href="?view=lanes">Raja info</a>, sisesta mõlema vahetuse võistkonnad ja vajuta „Avalda rajajaotus“. Vali seejärel saaliekraani nuppude hulgast „RAJA INFO“.</p></li>
         <li><b>Sisesta koosseisud ja punktid.</b><p>Ava <a href="?view=admin">Tulemuste sisestamine</a>. Vali „Lisa võistkond“, kontrolli märget „LIONS klubi“, sisesta liikmete nimed ja märgi igaühe arvestus. Mängu järel kirjuta punktid nime kõrvale.</p></li>
         <li><b>Näita tulemusi.</b><p>Vajuta „Avalda tulemused“. Vali saaliekraanile LIONSi edetabel või „Firma tulemused“. Järgmised avaldatud punktid jõuavad samale ekraanile automaatselt.</p></li>
-        <li><b>Salvesta lõppseis.</b><p>Kontrolli mõlema rühma edetabeleid ja eriauhindu. Ava <a href="?view=settings">Seaded ja varukoopiad</a>, salvesta JSON-varukoopia ja ekspordi punktid CSV-failina.</p></li>
+        <li><b>Salvesta lõppseis.</b><p>Kontrolli mõlema rühma edetabeleid ja eriauhindu. Ava <a href="?view=settings">Seaded ja varukoopiad</a>, kontrolli võistluse kuupäeva ja vali „Arhiveeri võistlus“. Soovi korral laadi enne alla JSON-varukoopia või CSV.</p></li>
       </ol>
     </details>
 
@@ -55,17 +55,18 @@ export default function CompetitionGuide() {
     <details><summary>Avaldamine ja saaliekraani kaugjuhtimine</summary>
       <p>„Tulemuste sisestamine“ ja „Raja info“ vahetavad korraldaja töölehte. Nende sakkide vahel liikudes säilib pooleliolev sisestus. Roheline avaldamisnupp näitab, et muudatused ootavad avaldamist. Avalda enne lehe sulgemist või uuesti laadimist.</p>
       <p>Päise paremas servas olev „Tulemuste ekraan“ avab avaliku tabloo. Selle kõrval olevad neli valikut määravad, mida publik näeb. Tumesinine valik on aktiivne. Ekraanivalik rakendub kohe ja avalikku lehte pole vaja värskendada. Rajajaotuse muutmiseks ja saaliekraani juhtimiseks sisesta korraldaja parool.</p>
-      <p>Rakendus hoiab tulemusi, rajajaotust ja aktiivset ekraanivalikut serveris eraldi JSON-failidena. Saaliekraan küsib tulemusi ligikaudu iga kolme sekundi järel ning rajajaotust ja ekraanivalikut ligikaudu iga kahe ja poole sekundi järel. Teises arvutis kuvamiseks on vaja internetiühendust.</p>
+      <p>Rakendus hoiab tulemusi, rajajaotust ja aktiivset ekraanivalikut serveris. Saaliekraan küsib tulemusi ligikaudu iga kolme sekundi järel ning rajajaotust ja ekraanivalikut ligikaudu iga kahe ja poole sekundi järel. Teises arvutis kuvamiseks on vaja internetiühendust.</p>
       <p>Kui näed teadet „Ühendus katkenud“, kontrolli ühendust ja oota taasühendumist. Kui teine sisestaja on vahepeal sama andmestikku avaldanud, jäta oma parandused meelde või kopeeri need. Laadi teates oleva nupuga avaldatud seis, tee parandused uuesti ja avalda.</p>
     </details>
 
+    <details><summary>Arhiiv ja ajaloo statistika</summary><p>Avalda tulemused ja rajajaotus. Vali seadetes „Arhiveeri võistlus“, kontrolli kuupäeva, osalejate arvu ja nulliga tulemusi ning kinnita. Aasta tuleb võistluse kuupäevast. Saaliekraan ootab seejärel uut võistlust.</p><p><a href="/arhiiv/">Võistluste arhiivis</a> saad valida aasta, LIONSi klubid või firmad ja sobiva edetabeli. Nimele vajutades näed varasemaid tulemusi. Sama aasta mitu võistlust leiad ühe aastalingi alt. Korraldaja saab eksliku punktisumma põhjendusega parandada. Ka varasem versioon jääb loetavaks.</p></details>
     <details><summary>Seaded, varukoopia ja uus võistlus</summary>
       <p>Seadetes saad muuta võistluse nime, korraldajat, kuupäeva ja ekraanivahetuse animatsiooni („Värvipööris“ või „Sümbolite sadu“). Kinnita valik nupuga „Salvesta seaded“.</p>
       <p>„Värskenda saaliekraani“ laadib avatud tabloo teises arvutis uuesti. Kasuta seda pärast rakenduse uuendamist. „Käsk saadetud“ tähendab, et rakendus ootab tabloolt kinnitust. „Saaliekraan värskendatud“ ilmub, kui vähemalt üks tabloo on uue lehe laadinud.</p>
       <dl><dt>Salvesta varukoopia</dt><dd>Laadib alla JSON-faili võistluse andmete, koosseisude, arvestusvalikute, punktide ja animatsiooniseadega. Rajajaotus ja aktiivne saaliekraani valik on eraldi ning jäävad varukoopiast välja.</dd>
       <dt>Taasta varukoopia</dt><dd>Vali rakenduse JSON-varukoopia ja kinnita asendamine. Kontrolli andmeid ning vajuta „Salvesta seaded“. Taastatava faili ülempiir on 300 000 baiti.</dd>
       <dt>Ekspordi tulemused</dt><dd>Laadib alla CSV-faili kõigi võistkondade liikmeridadega. Veerud on võistkond, võistleja, arvestus ja tulemus. CSV sobib Excelis avamiseks, JSON rakenduses taastamiseks.</dd>
-      <dt>Alusta uut võistlust</dt><dd>Salvesta esmalt lõppseisu varukoopia. Käsk tühjendab punktid ja määrab tänase kuupäeva Tallinna aja järgi. Koosseisud ja klubimärked säilivad. Kontrolli võistluse nime ja kinnita nupuga „Salvesta seaded“. Eelmiste aastate tulemuste säilitamiseks hoia iga aasta varukoopia eraldi alles.</dd></dl>
+      <dt>Alusta uut võistlust</dt><dd>Pärast arhiveerimist sisesta uue võistluse nimi ja kuupäev. Koosseisude ülekandmisel säilib võistlejate ja võistkondade seos nende varasemate tulemustega. Uue võistluse punktid ja rajajaotus algavad tühjalt.</dd></dl>
     </details>
   </section>;
 }

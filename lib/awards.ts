@@ -17,12 +17,12 @@ const participatingTeams = (state: State, group: ClubGroup) =>
 function hasResult<T extends {score:number|null}>(row:T): row is T & {score:number} {
  return row.score!==null && row.score>0;
 }
-export function awards(state:State, group:ClubGroup='lions'){
+export function awards(state:State, group:ClubGroup='lions', full=false){
  const eligible=participatingTeams(state, group);
  const players=eligible.flatMap(team=>team.players.map(p=>({...p,detail:team.name,order:refs[p.id]?.name===p.name&&refs[p.id]?.team===team.name?refs[p.id].order:10000})));
  const teams=eligible.map(team=>({...team,category:teamCategory(team),score:total(team),detail:team.players.filter(hasResult).map(p=>p.name).join(' · ')}));
  function top(rows:{id:string;name:string;detail?:string;score:number|null;order?:number}[],count:number):AwardRow[]{
-  return rows.filter(hasResult).sort((a,b)=>b.score-a.score||(a.order??10000)-(b.order??10000)).slice(0,count).map((r,i)=>({...r,rank:i+1}));
+  return rows.filter(hasResult).sort((a,b)=>b.score-a.score||(a.order??10000)-(b.order??10000)).slice(0,full?undefined:count).map((r,i)=>({...r,rank:i+1}));
  }
  return {teams:top(teams,6),individuals:top(players,6),women:top(players.filter(p=>p.category==='Women'),3),men:top(players.filter(p=>p.category==='Men'),3),womenTeams:top(teams.filter(t=>t.category==='Women'),3)};
 }

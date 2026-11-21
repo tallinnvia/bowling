@@ -6,9 +6,10 @@ import type { Team } from '../lib/scoring';
 import { ShiftTables } from './shift-tables';
 import { EntryHeader, useHall, type WorkspaceView } from './hall-control';
 
-export function LaneEditor({ teams,navigate,active }: { teams:Team[];navigate:(view:WorkspaceView)=>void;active:boolean }) {
+export function LaneEditor({ teams,navigate,active,onDirty }: { teams:Team[];navigate:(view:WorkspaceView)=>void;active:boolean;onDirty?:(dirty:boolean)=>void }) {
   const { snapshot, saving, publish, error } = useHall('lanes');
   const [draft, setDraft] = useState<{ lanes: Lane[]; baseline: Lane[]; revision: string } | null>(null);
+  useEffect(()=>{onDirty?.(Boolean(draft))},[Boolean(draft),onDirty]);
   const [notice, setNotice] = useState('');
   const lanes = draft?.lanes ?? snapshot?.value ?? [];
   const marked=useMemo(()=>draft ? markLaneChanges(draft.lanes,draft.baseline) : lanes,[lanes,draft]);
